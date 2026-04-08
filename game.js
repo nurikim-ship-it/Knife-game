@@ -599,7 +599,7 @@
     btn.disabled = true;
     btn.textContent = 'SAVING...';
 
-    fetch(`${FIREBASE_DB_URL}/knife-ranking.json`, {
+    fetch(`${FIREBASE_DB_URL}/ranking/knife.json`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -628,7 +628,7 @@
   function renderRanking() {
     rankingList.innerHTML = '<div class="rank-empty">불러오는 중...</div>';
 
-    fetch(`${FIREBASE_DB_URL}/knife-ranking.json`)
+    fetch(`${FIREBASE_DB_URL}/ranking/knife.json`)
       .then(res => res.json())
       .then(data => {
         rankingList.innerHTML = '';
