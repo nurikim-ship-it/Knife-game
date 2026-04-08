@@ -89,12 +89,11 @@
   function init() {
     canvas.width = CW;
     canvas.height = CH;
-    canvas.style.width = (CW * SCALE) + 'px';
-    canvas.style.height = (CH * SCALE) + 'px';
 
     ctx.imageSmoothingEnabled = false;
 
     bindEvents();
+    drawScreenArt();
     showScreen('title');
     drawHand();
   }
@@ -263,7 +262,7 @@
       success: true,
     };
 
-    playSound(600 + seqIndex * 30, 0.05, 'square');
+    playStabSound();
 
     seqIndex++;
     hudProgress.textContent = seqIndex + ' / 19';
@@ -678,22 +677,280 @@
   // --- 사운드 (Web Audio API) ---
   let audioCtx = null;
 
+  function getAudioCtx() {
+    if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    return audioCtx;
+  }
+
   function playSound(freq, duration, type) {
     try {
-      if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-      const osc = audioCtx.createOscillator();
-      const gain = audioCtx.createGain();
+      const c = getAudioCtx();
+      const osc = c.createOscillator();
+      const gain = c.createGain();
       osc.type = type || 'square';
       osc.frequency.value = freq;
       gain.gain.value = 0.08;
-      gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration);
+      gain.gain.exponentialRampToValueAtTime(0.001, c.currentTime + duration);
       osc.connect(gain);
-      gain.connect(audioCtx.destination);
+      gain.connect(c.destination);
       osc.start();
-      osc.stop(audioCtx.currentTime + duration);
+      osc.stop(c.currentTime + duration);
     } catch (e) {
       // 사운드 실패 시 무시
     }
+  }
+
+  // 찌르기 효과음 (D: 무거운 둔기 타격)
+  function playStabSound() {
+    try {
+      const c = getAudioCtx(), t = c.currentTime;
+      // 저음 임팩트
+      const o = c.createOscillator(); o.type = 'sine';
+      o.frequency.setValueAtTime(150, t);
+      o.frequency.exponentialRampToValueAtTime(30, t + 0.15);
+      const g = c.createGain();
+      g.gain.setValueAtTime(0.5, t);
+      g.gain.exponentialRampToValueAtTime(0.001, t + 0.2);
+      o.connect(g); g.connect(c.destination);
+      o.start(t); o.stop(t + 0.2);
+      // 잔향 노이즈
+      const buf = c.createBuffer(1, c.sampleRate * 0.12, c.sampleRate);
+      const d = buf.getChannelData(0);
+      for (let i = 0; i < d.length; i++) d[i] = (Math.random() * 2 - 1) * Math.exp(-i / (c.sampleRate * 0.04));
+      const ns = c.createBufferSource(); ns.buffer = buf;
+      const nf = c.createBiquadFilter(); nf.type = 'lowpass'; nf.frequency.value = 1500;
+      const ng = c.createGain(); ng.gain.value = 0.2;
+      ns.connect(nf); nf.connect(ng); ng.connect(c.destination);
+      ns.start(t);
+    } catch (e) {
+      // 사운드 실패 시 무시
+    }
+  }
+
+  // --- 화면 아트 렌더링 ---
+  function drawScreenArt() {
+    drawMafiaArt();
+    drawMoneyArt();
+    drawBloodArt();
+  }
+
+  // 마피아 아저씨 (타이틀 화면)
+  function drawMafiaArt() {
+    const c = document.getElementById('art-title');
+    c.width = 26; c.height = 32;
+    const x = c.getContext('2d');
+    x.imageSmoothingEnabled = false;
+
+    const hat = '#1a1a2e', hatH = '#2a2a42', band = '#cc2222';
+    const skin = '#e8b88a', skinS = '#c8956b';
+    const glass = '#111122', glassH = '#445566';
+    const suit = '#333355', suitH = '#444477';
+    const tie = '#cc2222', shirt = '#ffffff';
+    const blade = '#c0c0d0', bladeH = '#e0e0f0', bladeDk = '#808090';
+    const handle = '#6b3a1f', handleDk = '#4a2510';
+    const blk = '#000000';
+
+    // 중절모 크라운
+    fill(x, hat, 9,0, 8,1);
+    fill(x, hat, 8,1, 10,1);
+    fill(x, hat, 7,2, 12,1);
+    fill(x, hat, 6,3, 14,2);
+    fill(x, hatH, 14,2, 3,3);
+    // 모자 밴드
+    fill(x, band, 6,5, 14,1);
+    // 챙
+    fill(x, blk, 3,6, 20,1);
+    fill(x, hat, 5,7, 16,1);
+    // 이마
+    fill(x, skin, 7,8, 12,1);
+    // 선글라스
+    fill(x, skin, 7,9, 12,2);
+    fill(x, glass, 8,9, 4,2);
+    fill(x, glass, 14,9, 4,2);
+    fill(x, glass, 12,9, 2,1);
+    fill(x, glassH, 9,9, 1,1);
+    fill(x, glassH, 15,9, 1,1);
+    // 코 & 볼
+    fill(x, skin, 7,11, 12,2);
+    fill(x, skinS, 12,11, 2,1);
+    fill(x, skinS, 7,11, 1,2);
+    fill(x, skinS, 18,11, 1,2);
+    // 입 (씩 웃는)
+    fill(x, skin, 7,13, 12,1);
+    fill(x, blk, 9,13, 8,1);
+    fill(x, shirt, 10,13, 6,1);
+    // 턱
+    fill(x, skin, 8,14, 10,1);
+    // 목
+    fill(x, skin, 10,15, 6,1);
+    // 셔츠 칼라
+    fill(x, shirt, 9,16, 8,1);
+    // 어깨 & 수트
+    fill(x, suit, 4,17, 18,2);
+    fill(x, suit, 5,19, 16,6);
+    fill(x, suitH, 4,17, 4,2);
+    fill(x, suitH, 18,17, 4,2);
+    // 셔츠 V
+    fill(x, shirt, 12,17, 2,1);
+    fill(x, shirt, 11,18, 4,1);
+    // 넥타이
+    fill(x, tie, 12,18, 2,7);
+    // 오른팔 & 나이프
+    fill(x, suit, 21,19, 3,4);
+    fill(x, skin, 22,17, 2,2);
+    // 나이프 손잡이
+    fill(x, handle, 22,13, 2,4);
+    fill(x, handleDk, 22,13, 1,4);
+    // 나이프 날
+    fill(x, blade, 22,4, 2,9);
+    fill(x, bladeH, 22,4, 1,9);
+    fill(x, bladeDk, 23,4, 1,9);
+    // 나이프 끝
+    fill(x, blade, 22,3, 2,1);
+    fill(x, bladeH, 22,2, 1,1);
+    // 가드
+    fill(x, bladeDk, 21,13, 4,1);
+  }
+
+  // 돈다발 + 흩날리는 지폐 (클리어 화면)
+  function drawMoneyArt() {
+    const c = document.getElementById('art-clear');
+    c.width = 32; c.height = 26;
+    const x = c.getContext('2d');
+    x.imageSmoothingEnabled = false;
+
+    const g1 = '#22aa44', g2 = '#33cc55', g3 = '#118833';
+    const gold = '#ffcc00', goldDk = '#cc9900';
+    const band = '#ccaa44';
+    const blk = '#000000', wh = '#ffffff';
+
+    // 바닥 지폐 더미 (3단)
+    // 1단 (맨 아래)
+    fill(x, g3, 4,20, 24,2);
+    fill(x, g1, 4,18, 24,2);
+    fill(x, blk, 4,18, 24,1); // 테두리
+    fill(x, g2, 5,19, 22,1);
+    fill(x, wh, 14,19, 4,1); // $ 표시
+    // 2단
+    fill(x, g3, 6,16, 20,2);
+    fill(x, g1, 6,14, 20,2);
+    fill(x, blk, 6,14, 20,1);
+    fill(x, g2, 7,15, 18,1);
+    fill(x, wh, 14,15, 4,1);
+    // 3단 (맨 위)
+    fill(x, g3, 8,12, 16,2);
+    fill(x, g1, 8,10, 16,2);
+    fill(x, blk, 8,10, 16,1);
+    fill(x, g2, 9,11, 14,1);
+    fill(x, wh, 14,11, 4,1);
+    // 지폐 묶음 밴드
+    fill(x, band, 14,10, 4,12);
+    fill(x, goldDk, 14,10, 4,1);
+    fill(x, goldDk, 14,21, 4,1);
+
+    // 흩날리는 지폐들
+    // 왼쪽 위
+    fill(x, g1, 1,4, 6,3);
+    fill(x, g2, 2,5, 4,1);
+    fill(x, blk, 1,4, 6,1);
+    // 오른쪽 위
+    fill(x, g1, 24,2, 6,3);
+    fill(x, g2, 25,3, 4,1);
+    fill(x, blk, 24,2, 6,1);
+    // 중앙 위
+    fill(x, g1, 12,1, 7,3);
+    fill(x, g2, 13,2, 5,1);
+    fill(x, blk, 12,1, 7,1);
+    // 왼쪽 중간
+    fill(x, g1, 0,10, 5,2);
+    fill(x, blk, 0,10, 5,1);
+    // 오른쪽 중간
+    fill(x, g1, 28,8, 4,2);
+    fill(x, blk, 28,8, 4,1);
+
+    // 동전들
+    fill(x, gold, 2,17, 3,3);
+    fill(x, goldDk, 2,19, 3,1);
+    fill(x, gold, 27,15, 3,3);
+    fill(x, goldDk, 27,17, 3,1);
+
+    // 반짝임 (별 모양)
+    fill(x, wh, 5,1, 1,1);
+    fill(x, wh, 4,2, 3,1);
+    fill(x, wh, 5,3, 1,1);
+    fill(x, wh, 26,6, 1,1);
+    fill(x, wh, 25,7, 3,1);
+    fill(x, wh, 26,8, 1,1);
+    fill(x, wh, 10,5, 1,1);
+    fill(x, wh, 22,4, 1,1);
+  }
+
+  // 피 튀기는 효과 (게임오버 화면)
+  function drawBloodArt() {
+    const c = document.getElementById('art-gameover');
+    c.width = 28; c.height = 28;
+    const x = c.getContext('2d');
+    x.imageSmoothingEnabled = false;
+
+    const r1 = '#cc0000', r2 = '#ff2222', r3 = '#880000', r4 = '#550000';
+
+    // 중심 웅덩이
+    fill(x, r1, 9,10, 10,8);
+    fill(x, r1, 7,12, 14,4);
+    fill(x, r3, 10,12, 8,4);
+    fill(x, r2, 11,11, 6,2);
+
+    // 위로 튀기는 핏줄기
+    fill(x, r1, 13,2, 2,8);
+    fill(x, r2, 13,2, 1,4);
+    fill(x, r1, 10,5, 2,5);
+    fill(x, r3, 16,4, 2,6);
+    // 위 방울
+    fill(x, r1, 13,0, 2,2);
+    fill(x, r2, 9,3, 2,2);
+    fill(x, r1, 17,2, 2,2);
+
+    // 왼쪽으로 튀기는
+    fill(x, r1, 3,13, 6,2);
+    fill(x, r3, 4,12, 4,1);
+    fill(x, r1, 0,12, 3,2);
+    fill(x, r2, 1,11, 2,1);
+    fill(x, r1, 5,9, 2,3);
+
+    // 오른쪽으로 튀기는
+    fill(x, r1, 19,13, 6,2);
+    fill(x, r3, 20,12, 4,1);
+    fill(x, r1, 25,11, 3,3);
+    fill(x, r2, 26,10, 2,1);
+    fill(x, r1, 21,9, 2,3);
+
+    // 아래로 흐르는
+    fill(x, r1, 11,18, 2,6);
+    fill(x, r3, 11,22, 2,4);
+    fill(x, r1, 15,18, 2,5);
+    fill(x, r3, 15,21, 2,3);
+    fill(x, r1, 8,18, 2,4);
+    fill(x, r1, 18,17, 2,5);
+
+    // 작은 방울들 (사방)
+    fill(x, r1, 2,7, 2,2);
+    fill(x, r2, 6,3, 1,1);
+    fill(x, r1, 24,6, 2,2);
+    fill(x, r2, 21,3, 1,1);
+    fill(x, r1, 1,18, 2,2);
+    fill(x, r1, 25,19, 2,2);
+    fill(x, r3, 4,22, 1,1);
+    fill(x, r3, 23,24, 1,1);
+    fill(x, r2, 7,26, 2,1);
+    fill(x, r2, 20,27, 2,1);
+    fill(x, r4, 0,16, 1,1);
+    fill(x, r4, 27,16, 1,1);
+  }
+
+  // fillRect 헬퍼
+  function fill(ctx, color, fx, fy, fw, fh) {
+    ctx.fillStyle = color;
+    ctx.fillRect(fx, fy, fw, fh);
   }
 
   // --- 시작 ---

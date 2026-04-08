@@ -44,6 +44,15 @@ body {
   pointer-events: auto;
 }
 
+/* === 화면 아트 (픽셀 아트 캔버스) === */
+.screen-art {
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+  width: 180px;
+  height: auto;
+  margin-bottom: 12px;
+}
+
 /* === 타이틀 화면 === */
 #screen-title h1 {
   font-size: 28px;
@@ -134,7 +143,8 @@ body {
 #game-canvas {
   image-rendering: pixelated;
   image-rendering: crisp-edges;
-  max-width: 100%;
+  width: 100%;
+  max-width: 480px;
   height: auto;
 }
 
