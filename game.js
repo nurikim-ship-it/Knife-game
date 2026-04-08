@@ -127,16 +127,20 @@
       e.preventDefault();
       const touch = e.changedTouches[0];
       const rect = canvas.getBoundingClientRect();
-      const x = (touch.clientX - rect.left) / SCALE;
-      const y = (touch.clientY - rect.top) / SCALE;
+      const scaleX = CW / rect.width;
+      const scaleY = CH / rect.height;
+      const x = (touch.clientX - rect.left) * scaleX;
+      const y = (touch.clientY - rect.top) * scaleY;
       handleStab(x, y);
     });
   }
 
   function onCanvasClick(e) {
     const rect = canvas.getBoundingClientRect();
-    const x = (e.clientX - rect.left) / SCALE;
-    const y = (e.clientY - rect.top) / SCALE;
+    const scaleX = CW / rect.width;
+    const scaleY = CH / rect.height;
+    const x = (e.clientX - rect.left) * scaleX;
+    const y = (e.clientY - rect.top) * scaleY;
     handleStab(x, y);
   }
 
