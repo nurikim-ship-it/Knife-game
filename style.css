@@ -1,0 +1,317 @@
+/* === 기본 리셋 & 폰트 === */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  background: #0a0a0a;
+  font-family: 'Press Start 2P', monospace;
+  color: #ffffff;
+  overflow: hidden;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+}
+
+/* === 게임 래퍼 === */
+#game-wrapper {
+  width: 100vw;
+  height: 100vh;
+  max-width: 500px;
+  margin: 0 auto;
+  position: relative;
+  overflow: hidden;
+  background: #1a0f0a;
+}
+
+/* === 화면 전환 === */
+.screen {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s;
+}
+
+.screen.active {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* === 타이틀 화면 === */
+#screen-title h1 {
+  font-size: 28px;
+  line-height: 1.6;
+  text-align: center;
+  color: #ffcc00;
+  text-shadow: 3px 3px 0 #aa4400;
+  margin-bottom: 10px;
+}
+
+#screen-title .subtitle {
+  font-size: 10px;
+  color: #aa8866;
+  margin-bottom: 40px;
+}
+
+/* === 버튼 === */
+.pixel-btn {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 14px;
+  color: #ffffff;
+  background: #444444;
+  border: 3px solid #666666;
+  border-bottom-color: #222222;
+  border-right-color: #222222;
+  padding: 12px 28px;
+  cursor: pointer;
+  margin: 6px;
+  transition: background 0.1s;
+  image-rendering: pixelated;
+}
+
+.pixel-btn:hover {
+  background: #555555;
+}
+
+.pixel-btn:active {
+  background: #333333;
+  border-color: #222222;
+  border-top-color: #666666;
+  border-left-color: #666666;
+}
+
+.pixel-btn.small {
+  font-size: 10px;
+  padding: 8px 16px;
+}
+
+/* === 게임 HUD === */
+#game-hud {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: space-between;
+  padding: 12px 16px;
+  z-index: 10;
+  background: rgba(0, 0, 0, 0.5);
+}
+
+#hud-timer {
+  font-size: 16px;
+  color: #ffcc00;
+}
+
+#hud-progress {
+  font-size: 12px;
+  color: #aaaaaa;
+  align-self: center;
+}
+
+/* === 게임 캔버스 영역 === */
+#screen-game {
+  justify-content: flex-start;
+}
+
+#hand-area {
+  position: relative;
+  width: 100%;
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: crosshair;
+}
+
+#game-canvas {
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+}
+
+/* === 칼 커서 === */
+#knife-cursor {
+  position: absolute;
+  width: 20px;
+  height: 40px;
+  pointer-events: none;
+  opacity: 0;
+  z-index: 20;
+  transition: opacity 0.05s;
+}
+
+/* === 시퀀스 바 (하단 진행 표시) === */
+#sequence-bar {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 2px;
+  padding: 8px 4px 12px;
+  flex-wrap: wrap;
+  background: rgba(0, 0, 0, 0.5);
+}
+
+.seq-dot {
+  width: 14px;
+  height: 14px;
+  border: 2px solid #444444;
+  font-size: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #666666;
+}
+
+.seq-dot.done {
+  background: #44aa44;
+  border-color: #66cc66;
+  color: #ffffff;
+}
+
+.seq-dot.current {
+  background: #ffcc00;
+  border-color: #ffee44;
+  color: #000000;
+  animation: pulse 0.5s infinite alternate;
+}
+
+.seq-dot.fail {
+  background: #cc0000;
+  border-color: #ff2222;
+  color: #ffffff;
+}
+
+@keyframes pulse {
+  from { transform: scale(1); }
+  to { transform: scale(1.2); }
+}
+
+/* === 게임 오버 화면 === */
+#screen-gameover h2 {
+  font-size: 24px;
+  color: #ff2222;
+  text-shadow: 2px 2px 0 #880000;
+  margin-bottom: 16px;
+}
+
+#gameover-msg {
+  font-size: 10px;
+  color: #cc8888;
+  margin-bottom: 30px;
+}
+
+/* === 클리어 화면 === */
+#screen-clear h2 {
+  font-size: 24px;
+  color: #44ff44;
+  text-shadow: 2px 2px 0 #008800;
+  margin-bottom: 10px;
+}
+
+#clear-time {
+  font-size: 20px;
+  color: #ffcc00;
+  margin-bottom: 24px;
+}
+
+#clear-name-form {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.pixel-input {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 12px;
+  color: #ffffff;
+  background: #222222;
+  border: 3px solid #666666;
+  border-top-color: #222222;
+  border-left-color: #222222;
+  padding: 8px 12px;
+  width: 160px;
+  outline: none;
+}
+
+.pixel-input:focus {
+  border-color: #ffcc00;
+}
+
+/* === 랭킹 화면 === */
+#screen-ranking h2 {
+  font-size: 20px;
+  color: #ffcc00;
+  text-shadow: 2px 2px 0 #aa4400;
+  margin-bottom: 20px;
+}
+
+#ranking-list {
+  width: 90%;
+  max-width: 400px;
+  max-height: 50vh;
+  overflow-y: auto;
+  margin-bottom: 20px;
+}
+
+.rank-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 12px;
+  border-bottom: 2px solid #333333;
+  font-size: 10px;
+}
+
+.rank-row:nth-child(1) .rank-num { color: #ffcc00; }
+.rank-row:nth-child(2) .rank-num { color: #cccccc; }
+.rank-row:nth-child(3) .rank-num { color: #cc8844; }
+
+.rank-num {
+  color: #888888;
+  width: 40px;
+}
+
+.rank-name {
+  flex: 1;
+  text-align: left;
+  margin-left: 8px;
+  color: #cccccc;
+}
+
+.rank-time {
+  color: #ffcc00;
+}
+
+.rank-empty {
+  font-size: 10px;
+  color: #555555;
+  text-align: center;
+  padding: 20px;
+}
+
+/* === 화면 흔들림 (게임 오버) === */
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  20% { transform: translateX(-8px); }
+  40% { transform: translateX(8px); }
+  60% { transform: translateX(-6px); }
+  80% { transform: translateX(6px); }
+}
+
+.shake {
+  animation: shake 0.4s ease-out;
+}
+
+/* === 반응형 === */
+@media (max-height: 600px) {
+  #screen-title h1 { font-size: 22px; }
+  .pixel-btn { font-size: 12px; padding: 10px 20px; }
+  #hud-timer { font-size: 14px; }
+}

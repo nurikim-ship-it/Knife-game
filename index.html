@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>Knife Game</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div id="game-wrapper">
+
+    <!-- 시작 화면 -->
+    <div id="screen-title" class="screen active">
+      <h1>KNIFE<br>GAME</h1>
+      <p class="subtitle">Five Finger Fillet</p>
+      <button id="btn-start" class="pixel-btn">START</button>
+      <button id="btn-ranking-from-title" class="pixel-btn small">RANKING</button>
+    </div>
+
+    <!-- 게임 플레이 화면 -->
+    <div id="screen-game" class="screen">
+      <div id="game-hud">
+        <div id="hud-timer">0.000s</div>
+        <div id="hud-progress">0 / 19</div>
+      </div>
+      <div id="hand-area">
+        <canvas id="game-canvas"></canvas>
+        <div id="knife-cursor"></div>
+      </div>
+      <div id="sequence-bar"></div>
+    </div>
+
+    <!-- 게임 오버 화면 -->
+    <div id="screen-gameover" class="screen">
+      <h2>GAME OVER</h2>
+      <p id="gameover-msg">손가락을 찔렀다!</p>
+      <button id="btn-retry" class="pixel-btn">RETRY</button>
+      <button id="btn-title-from-gameover" class="pixel-btn small">TITLE</button>
+    </div>
+
+    <!-- 클리어 화면 -->
+    <div id="screen-clear" class="screen">
+      <h2>CLEAR!</h2>
+      <p id="clear-time">0.000s</p>
+      <div id="clear-name-form">
+        <input type="text" id="input-name" class="pixel-input" placeholder="NAME" maxlength="8">
+        <button id="btn-save-score" class="pixel-btn">SAVE</button>
+      </div>
+      <button id="btn-retry-from-clear" class="pixel-btn small">RETRY</button>
+      <button id="btn-title-from-clear" class="pixel-btn small">TITLE</button>
+    </div>
+
+    <!-- 랭킹 화면 -->
+    <div id="screen-ranking" class="screen">
+      <h2>RANKING</h2>
+      <div id="ranking-list"></div>
+      <button id="btn-title-from-ranking" class="pixel-btn">BACK</button>
+    </div>
+
+  </div>
+
+  <script src="game.js"></script>
+</body>
+</html>
